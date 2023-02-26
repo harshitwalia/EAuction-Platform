@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Airline">
+    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" type="text/css" href="materialize/css/materialize.css">
+    <script src="materialize/js/jquery.js"></script>
+    <script src="materialize/js/materialize.js"></script>
+</head>
+<body>
+
+<nav class="light-blue darken-4">
+    <div class="navbar-wrapper ">
+        <ul class="left brand-logo">
+            <li><a href="/">Home</a></li>
+        </ul>
+        <a href="/" class="brand-logo center">AIRLINE DBMS SYSTEM</a>
+
+
+        <ul class="right brand-logo">
+            <li class="active"><a href="signup.html">SignUp</a></li>
+            <li ><a  href="login.html">Login</a></li>
+        </ul>
+    </div>
+
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col s12 m2 l2"></div>
+        <div class="col s12 m8 l8" style="text-align: center">
+            <h1 style="text-align: center;  font-size: 400%; font-weight: 900 " class="red-text text-darken-4">
+                AIRLINE DBMS SYSTEM
+            </h1>
+        </div>
+        <div class="col s12 m2 l2"></div>
+    </div>
+    <div class="row" id="error" style="display: none">
+    </div>
+    <div class="row">
+        <div class="col s12 m3 l3">
+        </div>
+        <div class="col s12 m6 l6">
+
+                <div class="input-field">
+                    <input type="text" class="validate blue-text text-darken-4" name="username" id="username" required="required">
+                    <label for="username" class="blue-text text-darken-1">Username</label>
+                </div>
+                <div class="input-field">
+                    <input type="password"  required="required" class="validate blue-text text-darken-4 " name="password" id="password">
+                    <label for="password" class="blue-text text-darken-1">Password</label>
+                </div>
+                <div class="input-field">
+                    <input type="password"  required="required" class="validate blue-text text-darken-4 " name="confirmPassword" id="confirmPassword">
+                    <label for="confirmPassword" class="blue-text text-darken-1">Confirm Password</label>
+                </div>
+                <div class="input-field">
+                    <input type="number"  required="required" class="validate blue-text text-darken-4 " name="phone" id="phone">
+                    <label for="phone" class="blue-text text-darken-1">Mobile Number</label>
+                </div>
+                <button class="btn waves-effect waves-light green" type="submit" name="action" style="margin-left: 33%" id="submitButton">Submit
+                </button>
+
+        </div>
+        <div class="col s12 l3 m3">
+        </div>
+    </div>
+</div>
+<script>
+
+    $(function () {
+        $(".button-collapse").sideNav();
+        if(localStorage.getItem('username') != null )
+        {
+            localStorage.clear();
+            alert("You have been logged out");
+        }
+
+        var submit = $('#submitButton');
+        submit.click(function () {
+
+
+            var username = $('#username').val();
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmPassword').val();
+            var phone = $('#phone').val();
+            var error = null;
+            if(password != confirmPassword)
+            {
+                error = 'Please confirm password appropriately';
+                $('#error').html(error);
+                $('#error').css({'display' : 'block'});
+                return;
+            }
+
+            submit.html("Loading...");
+            var obj = {
+
+                username : username,
+                password : password,
+                phone : phone
+            };
+            $.post('/customer/signup', obj, function (data, status) {
+
+                if(data.result == 0)
+                {
+                    error = 'username already exits. Please choose another one';
+                    $('#error').html(error);
+                    $('#error').css({'display' : 'block'});
+                }
+                else
+                {
+                    localStorage.setItem('username' , username);
+                    localStorage.setItem('customerId', data.customerId);
+                    window.location.href = "profile.html";
+                }
+                submit.html("Submit");
+            })
+        });
+    });
+
+</script>
+</body>
+</html>

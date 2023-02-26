@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Airline">
+    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    <title>Book Flights</title>
+    <link rel="stylesheet" type="text/css" href="materialize/css/materialize.css">
+    <script src="materialize/js/jquery.js"></script>
+    <script src="materialize/js/materialize.js"></script>
+</head>
+<body>
+<nav class="light-blue darken-4">
+    <div class="navbar-wrapper ">
+        <a href="/" class="brand-logo left" STYLE="left:5px">Airline</a>
+
+        <ul class="right brand-logo">
+            <li ><a href="profile.html">My Profile</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+<br /><br /><br />
+<div class="container"  >
+    <div class="row ">
+        <div class="col s12 m3 l3"></div>
+        <div class="col s12 m6 l6 input-field card-content" >
+              <select  id="source">
+                    <option value="DELHI">DELHI</option>
+                    <option value="MUMBAI">MUMBAI</option>
+                    <option value="CHENNAI">CHENNAI</option>
+                    <option value="KOLKATA">KOLKATA</option>
+                    <option value="BANGLORE">BANGALORE</option>
+                    <option value="LUCKNOW">LUCKNOW</option>
+              </select>
+            <label for="source"><h6>SOURCE</h6></label>
+            <br>
+            <div class="input-field">
+                <select id="destination">
+                    <option value="DELHI">DELHI</option>
+                    <option value="MUMBAI">MUMBAI</option>
+                    <option value="CHENNAI">CHENNAI</option>
+                    <option value="KOLKATA">KOLKATA</option>
+                    <option value="BANGLORE">BANGALORE</option>
+                    <option value="LUCKNOW">LUCKNOW</option>
+                </select>
+                <label for="destination"><h6>DESTINATION</h6></label>
+            </div>
+            <br>
+            <div class="input-field">
+                <label for="date" class="active"><h6>Date</h6></label>
+                <input type="date" id="date" name="date">
+            </div>
+
+            <br>
+
+            <div class="row">
+                <div class="col s12 l3 m3"></div>
+                <div class="col s12 l6 m6">
+
+                    <button class="btn btn-block btn-large green" id="submit">Search Flights</button>
+
+                </div>
+                <div class="col s12 l3 m3"></div>
+            </div>
+
+
+        </div>
+        </div>
+        <div class="col s12 m3 l3"></div>
+    </div>
+    <div class="row table-of-contents" id="result" style="width: 80%; border: 2px solid black; display: none">
+
+
+    </div>
+
+<script>
+    $(document).ready(function() {
+        $(".button-collapse").sideNav();
+
+        if(localStorage.getItem('username') == null)
+        {
+            alert("Please login to continue");
+            window.location.href = "index.html";
+        }
+
+        $('select').material_select();
+        $('#submit').click(function () {
+
+            $('#submit').html("Loading....");
+            $('#result').html('');
+            var source = $('#source').val();
+            var destination = $('#destination').val();
+            var date = $('#date').val();
+            var obj = {
+                source : source,
+                destination : destination,
+                date : date
+            };
+
+            if(source == null || source == '' || destination == '' || destination == null || date == null || date == '')
+            {
+                alert("Please fill all the details");
+                $('#submit').html("Search Flights");
+            }
+            else
+            {
+                $.post('/flights/get', obj, function (data, status) {
+
+                    console.log(data.result);
+                    if(data.result.length == 0)
+                    {
+                        $('#result').html("No flights exists");
+                        $('#result').css({'display' : 'block'});
+
+                    }
+                    else {
+
+                        $('#result').css({'display' : 'block'});
+
+                     //   $('#result').html(data.result);
+                        var str = '<table id="tt" class="responsive-table  bordered blue-text striped"><thead><tr><td>Flight Id</td><td>Date</td><td>Source</td><td>Destination</td><td>Departure Time</td><td>Arrival Time</td><td>Fare</td><td>Available Seats<td></tr></thead>';
+
+                        for(var i = 0 ; i < data.result.length; ++i)
+                        {
+                            str += '<tr>';
+                            str += '<td>'  + data.result[i].flightId+ '</td>';
+                            str += '<td>'  + data.result[i].date+ '</td>';
+                            str += '<td>'  + data.result[i].source+ '</td>';
+                            str += '<td>'  + data.result[i].destination+ '</td>';
+                            str += '<td>'  + data.result[i].timeOfDeparture+ '</td>';
+                            str += '<td>'  + data.result[i].timeOfArrival+ '</td>';
+                            str += '<td>'  + data.result[i].fare+ '</td>';
+                            str += '<td>'  + data.result[i].totalAvailable+ '</td>';
+                            str += '</tr>';
+
+                        }
+
+                        str += '</table>';
+                        $('#result').html(str);
+                    }
+                    $('#submit').html("Search Flights");
+
+
+
+                    /*<table id="tt" class="responsive-table  bordered blue-text striped"><thead><tr>td>Flight Id</td><td>Date</td><td>Source</td><td>Destination</td><td>Arrival Time</td><td>Departure Time</td><td>Fare</td><td>Available Seats<td></tr></thead>
+                     */
+
+
+                });
+            }
+
+
+        });
+    });
+
+</script>
+</body>
+</html>
